@@ -21,6 +21,7 @@ m_brain = Brain()
 right_drive_motor = Motor(Ports.PORT6)
 left_drive_motor = Motor(Ports.PORT1)
 controller = Controller() 
+claw = Motor(Ports.PORT4) 
 
 def main(): 
     while True: 
@@ -28,4 +29,8 @@ def main():
         left_velocity = controller.axisA.position() 
         right_drive_motor.spin(REVERSE, right_velocity, PERCENT)
         left_drive_motor.spin(FORWARD, left_velocity, PERCENT) 
+        right_button_pressed_down = controller.buttonRDown.pressing() 
+        right_button_pressed_up = controller.buttonRUp.pressing()
+        right_button_position = right_button_pressed_up - right_button_pressed_down
+        claw.spin(FORWARD, (controller.buttonRDown.pressing() - controller.buttonLDown.pressing()) * 100, PERCENT) 
 main() 
