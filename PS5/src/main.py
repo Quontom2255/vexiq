@@ -13,9 +13,13 @@ from vex import *
 # Brain should be defined by default
 brainPS5=Brain()
 
-brainPS5.screen.print("Quontom2255") 
+brainPS5.screen.print("FBI") 
 
 from vex import * 
+
+JOYSTICK_DEADBAND = 15
+BUTTON_MOTOR_SPEED = 100
+LOOP_SLEEP_MSEC = 20
 
 m_brain = Brain() 
 right_drive_motor = Motor(Ports.PORT6)
@@ -23,14 +27,24 @@ left_drive_motor = Motor(Ports.PORT1)
 controller = Controller() 
 claw = Motor(Ports.PORT4) 
 
+def apply_deadband(value): 
+    if abs(value)<JOYSTICK_DEADBAND: 
+        return 0 
+    else: 
+        return value
+
 def main(): 
+    claw.set_stopping(HOLD)
+
     while True: 
-        right_velocity = controller.axisD.position() 
-        left_velocity = controller.axisA.position() 
+        right_velocity = apply_deadband(controller.axisD.position()) 
+        left_velocity = apply_deadband(controller.axisA.position()) 
         right_drive_motor.spin(REVERSE, right_velocity, PERCENT)
         left_drive_motor.spin(FORWARD, left_velocity, PERCENT) 
-        right_button_pressed_down = controller.buttonRDown.pressing() 
-        right_button_pressed_up = controller.buttonRUp.pressing()
-        right_button_position = right_button_pressed_up - right_button_pressed_down
-        claw.spin(FORWARD, (controller.buttonRDown.pressing() - controller.buttonLDown.pressing()) * 100, PERCENT) 
+        right_button_pressed_down = controller.buttonRUp.pressing() 
+        left_button_pressed_down = controller.buttonLUp.pressing()
+        right_button_position = right_button_pressed_down - left_button_pressed_down
+        claw.spin(FORWARD, (right_button_position) * BUTTON_MOTOR_SPEED, PERCENT) 
+
+        sleep(LOOP_SLEEP_MSEC)
 main() 
