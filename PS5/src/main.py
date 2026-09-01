@@ -22,7 +22,7 @@ BUTTON_MOTOR_SPEED = 100
 LOOP_SLEEP_MSEC = 20
 CLAW_MAX_TORQUE_PCT = 20
 
-FORNT_STOP_DISTANCE_MM = 90
+FORNT_STOP_DISTANCE_MM = 80
 OPTICAL_LIGHT_POWER_PCT = 70 
 TOUCHLED_BRIVGHTNESS = 120 
 SENSOR_WARMUP_MSEC = 1000
@@ -67,6 +67,31 @@ def apply_deadband(value):
     else: 
         return value
 
+def reset_debug_screen(title): 
+    m_brain.screen.clear_screen() 
+    m_brain.screen.set_cursor(1, 1) 
+    m_brain.screen.print(title)  
+    m_brain.screen.next_row() 
+
+def write_debug_line(label, value)
+    m_brain.screen.print(label) 
+    m_brain.screen.print(": ") 
+    m_brain.screen.print(value)  
+    m_brain.screen.next_row() 
+
+def show_sensor_debug(): 
+
+    reset_debug_screen("Sensor4 Debug") 
+
+    if not distance_sensor.installed(): 
+        write_debug_line("DistOK", False) 
+
+    if not optical_sensor.installed(): 
+            write_debug_line("OptOK", False) 
+
+    if not bumper_sensor.installed(): 
+            write_debug_line("BumpOK", False) 
+    
 def main(): 
     claw.set_stopping(HOLD)
     arm.set_stopping(HOLD)
@@ -98,7 +123,8 @@ def main():
         arm.spin(FORWARD, (left_button_position) * BUTTON_MOTOR_SPEED, PERCENT)
 
         update_side_touchled() 
-
-        sleep(LOOP_SLEEP_MSEC)
+        show_sensor_debug() 
+        
+        sleep(LOOP_SLEEP_MSEC) 
 
 main() 
